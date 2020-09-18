@@ -1,7 +1,8 @@
 import pygame
 import random
 
-class Player():
+
+class Player:
     def __init__(self, indx, x, y, width, height, color, kick, kickCheck):
         self.indx = indx
         self.x = x
@@ -22,7 +23,6 @@ class Player():
         self.velX = 0
         self.velXKick = 0
 
-
     def draw(self, win, myfont):
         pygame.draw.rect(win, self.color, self.rect)
         if self.kick == 1:
@@ -36,7 +36,6 @@ class Player():
             pygame.draw.rect(win, (0, 0, 0), (self.x + self.width, self.y, self.width, self.height))
 
         win.blit(myfont.render(str(self.indx + 1), False, (0, 0, 0)), (self.x, self.y))
-
 
     def move(self, playerKicked):
 
@@ -94,7 +93,7 @@ class Player():
         #     self.velY = -self.velMax
 
         if 256 <= (self.x + self.width + self.velX) and (self.x + self.velX) <= 1024:
-            if 519 >= (self.y + self.height) and (self.y + self.height + self.velY) > 519:
+            if (self.y + self.height) <= 519 < (self.y + self.height + self.velY):  # if 519 >= (self.y + self.height) and (self.y + self.height + self.velY) > 519
                 self.velY = 0
                 self.y = 519 - self.height
 
@@ -120,7 +119,6 @@ class Player():
             self.kick = 2
         else:  # elif not(keys[pygame.K_LEFT]) and not(keys[pygame.K_UP]) and not(keys[pygame.K_RIGHT])
             self.kick = 0
-
 
     def update(self):
         self.rect = (self.x, self.y, self.width, self.height)

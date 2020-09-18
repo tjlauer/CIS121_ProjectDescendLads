@@ -1,6 +1,6 @@
 import pygame
 from network import Network
-from player import Player
+# from player import Player
 
 # width = 500
 # height = 500
@@ -13,7 +13,8 @@ myfont = pygame.font.SysFont('Times New Roman', 30)
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
-def redrawWindow(win, p, p2):
+
+def redrawWindow(win, p2):
     win.fill((255, 255, 255))
 
     pygame.draw.rect(win, (0, 0, 0), (256, 519, 768, 50))
@@ -52,14 +53,13 @@ def main():
         p.move(playerKicked)
         p.kickAction()
 
-        redrawWindow(win, p, p2)
+        redrawWindow(win, p2)
 
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_ESCAPE]:
             run = False
             pygame.quit()
-            break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -72,7 +72,4 @@ def main():
             p.kickCheck = p.kick
 
 
-
-
 main()
-

@@ -22,6 +22,7 @@ print("Waiting for a connection, Server Started")
 # players = [Player(0, 0, 0, 50, 50, (0, 0, 0)), Player(1, 0, 0, 50, 50, (0, 0, 0))]
 players = []
 
+
 def threaded_client(conn, player):
     conn.send(pickle.dumps(players[player]))
     # kickPrev = 0
@@ -55,12 +56,31 @@ def threaded_client(conn, player):
     print("Player "+str(player)+" Lost Connection")
     conn.close()
 
+
 currentPlayer = 0
 while True:
     conn, addr = s.accept()
     print("Connected to:", addr)
 
-    players.append(Player(currentPlayer, random.randint(256, 1024), -50, 50, 50, (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255)), 0, 0))
+    newPlayer_indx = currentPlayer
+    newPlayer_spawnX = random.randint(256, 1024)
+    newPlayer_spawnY = -50
+    newPlayer_width = 50
+    newPlayer_height = 50
+    newPlayer_color = (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255))
+    newPlayer_kick = 0
+    newPlayer_kickCheck = 0
+
+    players.append(Player(
+        newPlayer_indx,
+        newPlayer_spawnX,
+        newPlayer_spawnY,
+        newPlayer_width,
+        newPlayer_height,
+        newPlayer_color,
+        newPlayer_kick,
+        newPlayer_kickCheck
+    ))
 
     start_new_thread(threaded_client, (conn, currentPlayer))
     currentPlayer += 1
