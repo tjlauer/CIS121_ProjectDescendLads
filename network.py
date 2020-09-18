@@ -15,6 +15,7 @@ class Network:
         return self.p
 
     def connect(self):
+        # noinspection PyBroadException
         try:
             self.client.connect(self.addr)
             return pickle.loads(self.client.recv(2048))

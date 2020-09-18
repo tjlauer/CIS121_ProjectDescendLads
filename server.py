@@ -3,6 +3,7 @@ from _thread import *
 from player import Player
 import pickle
 import random
+import sys
 
 # server = "192.168.1.28"
 server = "138.236.188.50"
@@ -18,39 +19,28 @@ except socket.error as e:
 s.listen(2)
 print("Waiting for a connection, Server Started")
 
-
-# players = [Player(0, 0, 0, 50, 50, (0, 0, 0)), Player(1, 0, 0, 50, 50, (0, 0, 0))]
 players = []
 
 
 def threaded_client(conn, player):
     conn.send(pickle.dumps(players[player]))
-    # kickPrev = 0
-    reply = ""
     while True:
+        # noinspection PyBroadException
         try:
             data = pickle.loads(conn.recv(2048))
             players[player] = data
 
-            # if data.kick != kickPrev:
-            #     print(str(data.kick))
-            #     kickPrev = data.kick
-
             if not data:
                 print("Player "+str(player)+" Disconnected")
                 break
-            else:
-                reply = players
-                # if player == 1:
-                #     reply = players[0]
-                # else:
-                #     reply = players[1]
 
-                # print("Received: ", data)
-                # print("Sending : ", reply)
+            reply = players
+            # print("Received: ", data)
+            # print("Sending : ", reply)
 
             conn.sendall(pickle.dumps(reply))
         except:
+            print("Unexpected error:", sys.exc_info()[0])
             break
 
     print("Player "+str(player)+" Lost Connection")
@@ -59,7 +49,7 @@ def threaded_client(conn, player):
 
 currentPlayer = 0
 while True:
-    conn, addr = s.accept()
+    connection, addr = s.accept()
     print("Connected to:", addr)
 
     newPlayer_indx = currentPlayer
@@ -82,5 +72,5 @@ while True:
         newPlayer_kickCheck
     ))
 
-    start_new_thread(threaded_client, (conn, currentPlayer))
+    start_new_thread(threaded_client, (connection, currentPlayer))
     currentPlayer += 1

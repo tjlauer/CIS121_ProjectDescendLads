@@ -1,9 +1,7 @@
 import pygame
 from network import Network
-# from player import Player
 
-# width = 500
-# height = 500
+
 width = 1280
 height = 720
 
@@ -14,7 +12,7 @@ win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Client")
 
 
-def redrawWindow(win, p2):
+def redrawWindow(p2):
     win.fill((255, 255, 255))
 
     pygame.draw.rect(win, (0, 0, 0), (256, 519, 768, 50))
@@ -53,7 +51,7 @@ def main():
         p.move(playerKicked)
         p.kickAction()
 
-        redrawWindow(win, p2)
+        redrawWindow(p2)
 
         keys = pygame.key.get_pressed()
 
@@ -68,7 +66,6 @@ def main():
                 break
 
         if p.kick != p.kickCheck:
-            # print(str(p.kick))
             p.kickCheck = p.kick
 
 

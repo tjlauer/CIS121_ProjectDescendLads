@@ -25,14 +25,11 @@ class Player:
 
     def draw(self, win, myfont):
         pygame.draw.rect(win, self.color, self.rect)
-        if self.kick == 1:
-            # print("Kick Left")
+        if self.kick == 1:  # print("Kick Left")
             pygame.draw.rect(win, (0, 0, 0), (self.x - self.width, self.y, self.width, self.height))
-        elif self.kick == 2:
-            # print("Kick Up")
+        elif self.kick == 2:  # print("Kick Up")
             pygame.draw.rect(win, (0, 0, 0), (self.x, self.y - self.height, self.width, self.height))
-        elif self.kick == 3:
-            # print("Kick Right")
+        elif self.kick == 3:  # print("Kick Right")
             pygame.draw.rect(win, (0, 0, 0), (self.x + self.width, self.y, self.width, self.height))
 
         win.blit(myfont.render(str(self.indx + 1), False, (0, 0, 0)), (self.x, self.y))
@@ -50,10 +47,8 @@ class Player:
 
         if keys[pygame.K_a]:  # K_LEFT
             self.velX -= self.acc
-            # self.x -= self.velX
         if keys[pygame.K_d]:  # K_RIGHT
             self.velX += self.acc
-            # self.x += self.velX
 
         if (keys[pygame.K_a] and keys[pygame.K_a]) or (~keys[pygame.K_a] and ~keys[pygame.K_a]):
             if self.velX > self.velThresh:
@@ -62,20 +57,6 @@ class Player:
                 self.velX += self.accDrag
             else:
                 self.velX = 0
-
-        # if keys[pygame.K_w]:  # K_UP
-        #     self.velY -= self.acc
-        #     # self.y -= self.velY
-        # elif keys[pygame.K_s]:  # K_DOWN
-        #     self.velY += self.acc
-        #     # self.y += self.velY
-        # else:
-        #     if self.velY > self.velThresh:
-        #         self.velY -= self.accDrag
-        #     elif self.velY < -self.velThresh:
-        #         self.velY += self.accDrag
-        #     else:
-        #         self.velY = 0
 
         if keys[pygame.K_SPACE] and self.velY == 0:
             self.velY -= (1.25 * self.velYMax)
@@ -87,13 +68,8 @@ class Player:
         elif self.velX < -self.velXMax:
             self.velX = -self.velXMax
 
-        # if self.velY > self.velMax:
-        #     self.velY = self.velMax
-        # elif self.velY < -self.velMax:
-        #     self.velY = -self.velMax
-
         if 256 <= (self.x + self.width + self.velX) and (self.x + self.velX) <= 1024:
-            if (self.y + self.height) <= 519 < (self.y + self.height + self.velY):  # if 519 >= (self.y + self.height) and (self.y + self.height + self.velY) > 519
+            if (self.y + self.height) <= 519 < (self.y + self.height + self.velY):
                 self.velY = 0
                 self.y = 519 - self.height
 
@@ -117,7 +93,7 @@ class Player:
             self.kick = 3
         elif not(keys[pygame.K_LEFT]) and keys[pygame.K_UP] and not(keys[pygame.K_RIGHT]):
             self.kick = 2
-        else:  # elif not(keys[pygame.K_LEFT]) and not(keys[pygame.K_UP]) and not(keys[pygame.K_RIGHT])
+        else:
             self.kick = 0
 
     def update(self):
