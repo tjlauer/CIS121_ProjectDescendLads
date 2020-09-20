@@ -6,9 +6,12 @@ import random
 import sys
 
 # The IPv4 address of the server
-server = "138.236.188.50"  # "192.168.1.28"
+server = ""  # "192.168.1.25"  # "138.236.188.50"
 # The network port through which to communicate
 port = 5555
+
+server_ip = socket.gethostbyname(server)
+print(server_ip)
 
 # NOTE: Values for "server" and "port" MUST match the values in "network.py"
 
@@ -21,6 +24,10 @@ try:
 except socket.error as e:
     # If there is a socket error, grab the error and print it to the console
     str(e)
+
+print(socket.gethostname())
+# print(socket.getfqdn())
+# print(s.getsockname())
 
 # Enable the server to start accepting new connections.
 # The argument is "backlog" which specifies the number of unaccepted connections that the system will allow before refusing new connections.

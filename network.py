@@ -9,7 +9,7 @@ class Network:
         # Create a socket using the given address family (socket.AF_INET) and socket type (socket.SOCK_STREAM) to facilitate network communications
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # The IPv4 address of the server
-        self.server = "138.236.188.50"  # "192.168.1.28"
+        self.server = "3.21.40.61"  # "192.168.1.25"  # "138.236.188.50"
         # The network port through which to communicate
         self.port = 5555
         # Create the address by combining the server IPv4 address and the port
