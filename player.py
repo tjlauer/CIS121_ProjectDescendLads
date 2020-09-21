@@ -43,7 +43,10 @@ class Player:
         self.velX = 0
 
     # Function used to draw the character itself, as well as a box showing the kick zone if the character is currently kicking
-    def draw(self, win, myfont):
+    def draw(self, win, font_array):
+        # Add black text showing client version number
+        win.blit(font_array[1].render("BETA 1.0.0", False, (0, 0, 0)), (0, 0))
+
         # Draw the character onto the window "win" with the color "self.color" as specified in "self.rect"
         pygame.draw.rect(win, self.color, self.rect)
 
@@ -63,7 +66,7 @@ class Player:
             pygame.draw.rect(win, (0, 0, 0), (self.x + self.width, self.y, self.width, self.height))
 
         # Add black text of the character's (indx+1) using "myfont" on top of the character
-        win.blit(myfont.render(str(self.indx + 1), False, (0, 0, 0)), (self.x, self.y))
+        win.blit(font_array[2].render(str(self.indx + 1), False, (0, 0, 0)), (self.x, self.y))
 
     # Function does all of the fun math on how the physically move the character, as well as pixel-perfect collision detection for the platform
     def move(self, playerKicked):
@@ -111,7 +114,7 @@ class Player:
                 self.velX = 0
 
         # If the Y-Axis velocity is zero (i.e. character is on the platform) and the space bar is pressed
-        if keys[pygame.K_SPACE] and self.velY == 0:
+        if keys[pygame.K_SPACE] and self.velY == 0 and (self.y == 519 - self.height):
             # Make the character jump by setting the Y-Axis velocity
             self.velY -= (1.25 * self.velYMax)
 

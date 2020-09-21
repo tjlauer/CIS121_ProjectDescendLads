@@ -8,7 +8,9 @@ height = 720
 # Initialize the font functionality of pygame
 pygame.font.init()
 # Create a font for text using Times New Roman size 30
-myfont = pygame.font.SysFont('Times New Roman', 30)
+myfont_sml = pygame.font.SysFont('Times New Roman', 12)
+myfont_med = pygame.font.SysFont('Times New Roman', 20)
+myfont_lrg = pygame.font.SysFont('Times New Roman', 30)
 
 # Create the pygame window with the previously defined width and height
 win = pygame.display.set_mode((width, height))
@@ -28,7 +30,7 @@ def redrawWindow(p2):
     # Loop through all elements in the "p2" array as "player"
     for player in p2:
         # Call the player class function "draw" for the current character
-        player.draw(win, myfont)
+        player.draw(win, [myfont_sml, myfont_med, myfont_lrg])
 
     # Once everything has been redrawn onto the window, show it to the user
     pygame.display.update()

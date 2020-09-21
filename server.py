@@ -10,9 +10,6 @@ server = ""  # "192.168.1.25"  # "138.236.188.50"
 # The network port through which to communicate
 port = 5555
 
-server_ip = socket.gethostbyname(server)
-print(server_ip)
-
 # NOTE: Values for "server" and "port" MUST match the values in "network.py"
 
 # Create a socket using the given address family (socket.AF_INET) and socket type (socket.SOCK_STREAM) to facilitate network communications
@@ -24,6 +21,9 @@ try:
 except socket.error as e:
     # If there is a socket error, grab the error and print it to the console
     str(e)
+
+# server_ip = socket.gethostbyname(server)
+# print(server_ip)
 
 print(socket.gethostname())
 # print(socket.getfqdn())
