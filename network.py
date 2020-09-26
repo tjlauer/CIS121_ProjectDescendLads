@@ -1,6 +1,11 @@
 import socket
 import pickle
 
+serverIPAddresses = {
+    "AWS Instance": "18.222.170.251",
+    "Tom Personal PC": "192.168.1.25",
+    "Tom Work PC": "138.236.188.50"
+}
 
 # Create the "Network" class. This is the code that sets up the client for network communication.
 class Network:
@@ -9,7 +14,7 @@ class Network:
         # Create a socket using the given address family (socket.AF_INET) and socket type (socket.SOCK_STREAM) to facilitate network communications
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # The IPv4 address of the server
-        self.server = "3.21.40.61"  # "192.168.1.25"  # "138.236.188.50"
+        self.server = serverIPAddresses["AWS Instance"]
         # The network port through which to communicate
         self.port = 5555
         # Create the address by combining the server IPv4 address and the port

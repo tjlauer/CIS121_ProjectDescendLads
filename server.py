@@ -37,13 +37,13 @@ s.listen(2)
 print("Waiting for a connection, Server Started")
 
 # Initialize the blank array that will hold ALL character data.
-players = []
+players = {}
 
 
 # Function is executed in a separate thread, as to allow multiple connections to exist within while-loops in parallel
-def threaded_client(conn, player):
+def threaded_client(conn, IDString):
     # When the client connects for the first time, send the initial character data to the client
-    conn.send(pickle.dumps(players[player]))
+    conn.send(pickle.dumps(players[IDString]))
 
     # Begin a while-loop to facilitate communication with this particular client.
     # We can do a while-loop while still accepting new connections BECAUSE this function is running on a new CPU thread
@@ -53,12 +53,12 @@ def threaded_client(conn, player):
             # Wait for the character data to be sent from the client
             data = pickle.loads(conn.recv(2048))
             # Store the new data in the players array
-            players[player] = data
+            players[IDString] = data
 
             # If the data is "False" (meaning there is no data)
             if not data:
                 # Notify the user hosting the server that this connection has disconnected.
-                print("Player "+str(player)+" Disconnected")
+                print("Player "+str(IDString)+" Disconnected")
                 # Break out of the while-loop
                 break
 
@@ -71,12 +71,13 @@ def threaded_client(conn, player):
             conn.sendall(pickle.dumps(reply))
         except:
             # If there is some sort of error, notify the user hosting the server
-            print("Unexpected error:", sys.exc_info()[0])
+            # print("Unexpected error:", sys.exc_info()[0])
             # Break out of the while-loop
             break
 
     # Notify the user hosting the server that a client has lost connection
-    print("Player "+str(player)+" Lost Connection")
+    print("Player "+str(IDString)+" Lost Connection")
+    players.pop(IDString)
     # Close the connection
     conn.close()
 
@@ -91,31 +92,41 @@ while True:
     # Notify the user hosting server of the new connection by writing to the console.
     print("Connected to:", addr)
 
-    # Create temporary variables for the new character's initial values
-    # All of these variables and their values are explained in "player.py" under "class Player __init__"
-    newPlayer_indx = currentPlayer
-    newPlayer_spawnX = random.randint(256, 1024)
-    newPlayer_spawnY = -50
-    newPlayer_width = 50
-    newPlayer_height = 50
-    newPlayer_color = (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255))
-    newPlayer_kick = 0
-    newPlayer_kickCheck = 0
+    decToHexArray = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
+    IDString = ""
+
+    for f in range(6):
+        IDString = IDString + decToHexArray[random.randint(0, 15)]
+
+    # Create a dictionary for the new character's initial values and client constants
+    newPlayer = {}
+
+    newPlayer["usertag"] = IDString
+
+    newPlayer["indx"] = currentPlayer
+    newPlayer["spawnX"] = random.randint(256, 1024)
+    newPlayer["spawnY"] = -50
+    newPlayer["width"] = 50
+    newPlayer["height"] = 50
+    newPlayer["color"] = (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255))
+    newPlayer["kick"] = 0
+    newPlayer["kickCheck"] = 0
+
+    newPlayer["gravity"] = 0.25 * 3
+    newPlayer["velXMax"] = 12 * 2
+    newPlayer["velYMax"] = 10 * 2
+    newPlayer["velThresh"] = 0.05
+    newPlayer["acc"] = 0.5 * 3
+    newPlayer["accDrag"] = 0.1 * 3
+    newPlayer["velY"] = 0
+    newPlayer["velX"] = 0
 
     # Append the newly created Player class to the players array.
-    players.append(Player(
-        newPlayer_indx,
-        newPlayer_spawnX,
-        newPlayer_spawnY,
-        newPlayer_width,
-        newPlayer_height,
-        newPlayer_color,
-        newPlayer_kick,
-        newPlayer_kickCheck
-    ))
+    # players.append(Player(newPlayer))
+    players[IDString] = Player(newPlayer)
 
     # Start a new CPU thread to run the function "threaded_client" with the arguments "connection" and "currentPlayer"
-    start_new_thread(threaded_client, (connection, currentPlayer))
+    start_new_thread(threaded_client, (connection, IDString))
 
     # Increment the currentPlayer counter to prepare for the next new connection
     currentPlayer += 1

@@ -5,48 +5,46 @@ import random
 # Create the "Player" class. This is the code that every character runs.
 class Player:
     # Initialize the character with data sent by the server when the client first connected
-    def __init__(self, indx, x, y, width, height, color, kick, kickCheck):
+    def __init__(self, newPlayer):
+        self.usertag = newPlayer["usertag"]
         # The player index and the position in the "p2" array of the current character
-        self.indx = indx
+        self.indx = newPlayer["indx"]
         # The X-Axis position of the top-left corner of the character for the initial spawn
-        self.x = x
+        self.x = newPlayer["spawnX"]
         # The Y-Axis position of the top-left corner of the character for the initial spawn.
         # NOTE: The Y-Axis is weird. The top of the window is 0, and increases as you move towards to bottom of the window.
-        self.y = y
+        self.y = newPlayer["spawnY"]
         # The width of the character and it's kick zone
-        self.width = width
+        self.width = newPlayer["width"]
         # The height of the character and it's kick zone
-        self.height = height
+        self.height = newPlayer["height"]
         # The random color assigned to the character
-        self.color = color
+        self.color = newPlayer["color"]
         # This is the actual shape of the character itself. This is used when drawing the character onto the window.
-        self.rect = (x, y, width, height)
+        self.rect = (newPlayer["spawnX"], newPlayer["spawnY"], newPlayer["width"], newPlayer["height"])
         # Stores whether or not the character is currently kicking
-        self.kick = kick
+        self.kick = newPlayer["kick"]
         # Stores the value of kick from the previous frame
-        self.kickCheck = kickCheck
+        self.kickCheck = newPlayer["kickCheck"]
         # This is the downward acceleration of the characters
-        self.gravity = 0.25
+        self.gravity = newPlayer["gravity"]
         # This is the maximum velocity a character can travel along the X-Axis. Possible X-Axis velocities are [-velXMax, velXMax]
-        self.velXMax = 12
+        self.velXMax = newPlayer["velXMax"]
         # This is the maximum velocity a character can travel along the Y-Axis. Possible Y-Axis velocities are [-velYMax, velYMax]
-        self.velYMax = 10
+        self.velYMax = newPlayer["velYMax"]
         # If the magnitude of the character velocity falls below this threshold, the velocity is set to zero. This prevents drifting.
-        self.velThresh = 0.05
+        self.velThresh = newPlayer["velThresh"]
         # This is the value added to / subtracted from the X-Axis Velocity while the left or right keys are being pressed.
-        self.acc = 0.5
+        self.acc = newPlayer["acc"]
         # This is the rate at which the character will slow down along the X-Axis. Think of it as friction from the floor.
-        self.accDrag = 0.1
+        self.accDrag = newPlayer["accDrag"]
         # This stores the current Y-Axis velocity of the character.
-        self.velY = 0
+        self.velY = newPlayer["velY"]
         # This stores the current X-Axis velocity of the character.
-        self.velX = 0
+        self.velX = newPlayer["velX"]
 
     # Function used to draw the character itself, as well as a box showing the kick zone if the character is currently kicking
-    def draw(self, win, font_array):
-        # Add black text showing client version number
-        win.blit(font_array[1].render("BETA 1.0.0", False, (0, 0, 0)), (0, 0))
-
+    def draw(self, win, myfont):
         # Draw the character onto the window "win" with the color "self.color" as specified in "self.rect"
         pygame.draw.rect(win, self.color, self.rect)
 
@@ -66,10 +64,12 @@ class Player:
             pygame.draw.rect(win, (0, 0, 0), (self.x + self.width, self.y, self.width, self.height))
 
         # Add black text of the character's (indx+1) using "myfont" on top of the character
-        win.blit(font_array[2].render(str(self.indx + 1), False, (0, 0, 0)), (self.x, self.y))
+        win.blit(myfont["Times New Roman 12"].render(str(self.usertag), False, (0, 0, 0)), (self.x, self.y - 12))
 
     # Function does all of the fun math on how the physically move the character, as well as pixel-perfect collision detection for the platform
-    def move(self, playerKicked):
+    def move(self, playerKicked, FrameRate):
+
+        accMult = 60/FrameRate
 
         # If the character has been kicked to the LEFT, set it's X-Axis velocity to MAX in the LEFT direction.
         if playerKicked == 1:
@@ -88,11 +88,11 @@ class Player:
 
         # If the "A" key is being pressed, accelerate to the left by subtracting from the X-Axis velocity
         if keys[pygame.K_a]:  # K_LEFT
-            self.velX -= self.acc
+            self.velX -= self.acc  # * accMult
 
         # If the "D" key is being pressed, accelerate to the right by adding to the X-Axis velocity
         if keys[pygame.K_d]:  # K_RIGHT
-            self.velX += self.acc
+            self.velX += self.acc  # * accMult
 
         # NOTE: By having the "A" and "D" keypress checks as separate if statements, they cancel each other out if both are being pressed.
         #       This results in zero net-change in X-Axis velocity.
@@ -102,12 +102,12 @@ class Player:
             # If the X-Axis velocity is towards the right (positive)
             if self.velX > self.velThresh:
                 # Apply drag to the left (subtract) to slow down the character
-                self.velX -= self.accDrag
+                self.velX -= self.accDrag  # * accMult
 
             # If the X-Axis velocity is towards the left (negative)
             elif self.velX < -self.velThresh:
                 # Apply drag to the right (add) to slow down the character
-                self.velX += self.accDrag
+                self.velX += self.accDrag  # * accMult
 
             # If the magnitude of the X-Axis velocity is below the threshold, set the X-Axis velocity to zero.
             else:
@@ -119,7 +119,7 @@ class Player:
             self.velY -= (1.25 * self.velYMax)
 
         # Add gravity to the Y-Axis velocity
-        self.velY += self.gravity
+        self.velY += self.gravity  # * accMult
 
         # If the X-Axis velocity was calculated to go above MAX
         if self.velX > self.velXMax:
