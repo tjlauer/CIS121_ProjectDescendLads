@@ -115,9 +115,9 @@ while True:
     newPlayer["gravity"] = 0.25 * 3
     newPlayer["velXMax"] = 12 * 2
     newPlayer["velYMax"] = 10 * 2
-    newPlayer["velThresh"] = 0.05
+    newPlayer["velThresh"] = 0.8  # 0.05
     newPlayer["acc"] = 0.5 * 3
-    newPlayer["accDrag"] = 0.1 * 3
+    newPlayer["accDrag"] = 0.1 * 8
     newPlayer["velY"] = 0
     newPlayer["velX"] = 0
 
