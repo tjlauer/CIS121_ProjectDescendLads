@@ -82,7 +82,8 @@ class Player:
 
         # If the character has been kicked to the RIGHT, set it's X-Axis velocity to MAX in the RIGHT direction.
         if playerKicked == 3:
-            self.velX = self.velXMax * (1/4)
+            self.velX = self.velXMax
+            self.velY = -self.velYMax * (1 / 4)
 
         # Get a dictionary of all keyboard keys that contains if the specified key is currently pressed (True) or not (False)
         keys = pygame.key.get_pressed()

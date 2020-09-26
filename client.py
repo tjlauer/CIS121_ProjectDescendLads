@@ -78,7 +78,7 @@ def main():
     p = n.getP()
 
     # Set the window title permanently to "Player #" to replace the placeholder, where # is this client's indx number plus 1
-    pygame.display.set_caption("Descend Guys: Australia [ALPHA 2.0.1]")
+    pygame.display.set_caption("Descend Guys: Australia [ALPHA 2.0.2]")
 
     # Initiate the pygame clock, which is used to lock the window frame rate
     clock = pygame.time.Clock()
