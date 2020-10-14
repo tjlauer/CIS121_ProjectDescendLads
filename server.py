@@ -5,6 +5,11 @@ import pickle
 import random
 import sys
 
+print("\n\n\n\n\n")
+print("Descend Guys: Australia [ALPHA 2.1.0]")
+print("-------------------------------------")
+print("Starting server...")
+
 # The IPv4 address of the server
 server = ""  # "192.168.1.25"  # "138.236.188.50"
 # The network port through which to communicate
@@ -25,7 +30,7 @@ except socket.error as e:
 # server_ip = socket.gethostbyname(server)
 # print(server_ip)
 
-print(socket.gethostname())
+# print(socket.gethostname())
 # print(socket.getfqdn())
 # print(s.getsockname())
 
@@ -34,7 +39,8 @@ print(socket.gethostname())
 s.listen(2)
 
 # Server has started successfully. Notify the user hosting server by writing to the console.
-print("Waiting for a connection, Server Started")
+print("Server started successfully!\n")
+print("Waiting for a connection...")
 
 # Initialize the blank array that will hold ALL character data.
 players = {}

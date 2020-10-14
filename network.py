@@ -4,17 +4,20 @@ import pickle
 serverIPAddresses = {
     "AWS Instance": "18.222.170.251",
     "Tom Personal PC": "192.168.1.25",
-    "Tom Work PC": "138.236.188.50"
+    "Tom Work PC": "138.236.188.50",
+    "local": "localhost"
 }
+
 
 # Create the "Network" class. This is the code that sets up the client for network communication.
 class Network:
     # Initialize the network
-    def __init__(self):
+    def __init__(self, serverIP):
         # Create a socket using the given address family (socket.AF_INET) and socket type (socket.SOCK_STREAM) to facilitate network communications
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # The IPv4 address of the server
-        self.server = serverIPAddresses["AWS Instance"]
+        # self.server = serverIPAddresses["local"]
+        self.server = serverIP
         # The network port through which to communicate
         self.port = 5555
         # Create the address by combining the server IPv4 address and the port
@@ -36,7 +39,10 @@ class Network:
             return pickle.loads(self.client.recv(2048))
         except:
             # If the connection attempt fails, do nothing
-            pass  # NOTE: The "pass" statement does literally nothing. It is a placeholder when a statement is required for syntax, but no code needs to be executed
+            # pass  # NOTE: The "pass" statement does literally nothing. It is a placeholder when a statement is required for syntax, but no code needs to be executed
+            print("Connection attempt failed! Bad IP Address?")
+            raise RuntimeError from None
+            # raise ConnectionFailedError("ConnectionFailedError", "Connection attempt failed! Bad IP Address?")
 
     # Function sends this client's character data to the server, then returns an array sent by the server containing the data for ALL characters
     def send(self, data):

@@ -2,9 +2,12 @@ import pygame
 from network import Network
 import time
 
+windowTitle = "Descend Guys: Australia [ALPHA 2.1.0]"
+
 # Define window width and height (in pixels)
 width = 1280
 height = 720
+FrameRateLock = 20
 
 # Initialize the font functionality of pygame
 pygame.font.init()
@@ -20,8 +23,8 @@ myfont = {
 
 # Create the pygame window with the previously defined width and height
 win = pygame.display.set_mode((width, height))
-# Set the window title to "Client" as a placeholder
-pygame.display.set_caption("Client")
+# Set the window title permanently to "Player #" to replace the placeholder, where # is this client's indx number plus 1
+pygame.display.set_caption(windowTitle)
 
 
 # This function receives the array "p2" (containing the character data for all players) send from the server.
@@ -55,43 +58,136 @@ def redrawWindow(p2, playerUsertag, playerColor, latencyCheck, FPSCheck):
 
     if FPSCheckOld == 0:
         win.blit(myfont["Times New Roman 12"].render("FPS: INF", False, (0, 0, 0)), (0, 75))
+        FrameRate = FrameRateLock
     else:
         win.blit(myfont["Times New Roman 12"].render("FPS: " + str(1 / FPSCheckOld), False, (0, 0, 0)), (0, 75))
+        FrameRate = 1 / FPSCheckOld
 
     # Once everything has been redrawn onto the window, show it to the user
     pygame.display.update()
 
-    FrameRate = 1 / FPSCheckOld
-
     return FPSCheckNew, FrameRate
+
+
+def redrawTitleWindow(serverIP, serverIPFailed):
+    win.fill((255, 255, 255))
+    win.blit(myfont["Times New Roman 30"].render(windowTitle, False, (0, 0, 0)), (0, 0))
+    win.blit(myfont["Times New Roman 30"].render("Server IP: "+serverIP, False, (0, 0, 0)), (0, 50))
+    if serverIPFailed:
+        win.blit(myfont["Times New Roman 20"].render("Server Not Responding or Invalid IP. Please Try Again.", False, (255, 0, 0)), (0, 100))
+    pygame.display.update()
+
+
+def IPAddressKey(key):
+    if key == pygame.K_0 or key == pygame.K_KP0:
+        return "0"
+    if key == pygame.K_1 or key == pygame.K_KP1:
+        return "1"
+    if key == pygame.K_2 or key == pygame.K_KP2:
+        return "2"
+    if key == pygame.K_3 or key == pygame.K_KP3:
+        return "3"
+    if key == pygame.K_4 or key == pygame.K_KP4:
+        return "4"
+    if key == pygame.K_5 or key == pygame.K_KP5:
+        return "5"
+    if key == pygame.K_6 or key == pygame.K_KP6:
+        return "6"
+    if key == pygame.K_7 or key == pygame.K_KP7:
+        return "7"
+    if key == pygame.K_8 or key == pygame.K_KP8:
+        return "8"
+    if key == pygame.K_9 or key == pygame.K_KP9:
+        return "9"
+    if key == pygame.K_PERIOD or key == pygame.K_KP_PERIOD:
+        return "."
+
+    return ""
+
+
+def titleScreen(serverIPFailed):
+    # Initiate the pygame clock, which is used to lock the window frame rate
+    clock = pygame.time.Clock()
+
+    serverIPEntered = False
+    serverIP = ""
+
+    while not serverIPEntered:
+        clock.tick(FrameRateLock)
+
+        # Get a dictionary of all keyboard keys that contains if the specified key is currently pressed (True) or not (False)
+        keys = pygame.key.get_pressed()
+
+        # If the keyboard "ESCAPE" key is pressed
+        if keys[pygame.K_ESCAPE]:
+            serverIP = "QUIT"
+            serverIPEntered = True
+            break
+        if keys[pygame.K_RETURN]:
+            serverIPEntered = True
+
+        redrawTitleWindow(serverIP, serverIPFailed)
+
+        # Get all pygame events
+        for event in pygame.event.get():
+            # If the "pygame.QUIT" event is found
+            # if event.type == pygame.QUIT:
+            #     # Call the pygame "quit" method to close the window
+            #     pygame.quit()
+            #     serverIP = "QUIT"
+            #     # Break out of the current for-loop
+            #     break
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_l:
+                    serverIP = "localhost"
+                elif event.key == pygame.K_BACKSPACE:
+                    if serverIP == "localhost":
+                        serverIP = ""
+                    else:
+                        serverIP = serverIP[0:(len(serverIP) - 1)]
+                else:
+                    serverIP += IPAddressKey(event.key)
+
+    return serverIP
 
 
 # This is the main client function which runs all client side functions, which is why it is called "main"
 def main():
-    # Initialize the while-loop conditional variable as True
-    run = True
-
-    # Get the "Network" class from "network.py" to communicate with the server
-    n = Network()
-
-    # Get this specific client's player data, i.e. the data sent to the client when it first connected
-    p = n.getP()
-
-    # Set the window title permanently to "Player #" to replace the placeholder, where # is this client's indx number plus 1
-    pygame.display.set_caption("Descend Guys: Australia [ALPHA 2.0.2]")
-
     # Initiate the pygame clock, which is used to lock the window frame rate
     clock = pygame.time.Clock()
 
-    FPSCheck = time.time()
+    # Initialize the while-loop conditional variable as False
+    run = False
 
-    FrameRate = 60
+    # serverIP = "localhost"
+
+    serverIPFailed = False
+    titleScreenQuit = False
+
+    while not titleScreenQuit:
+        try:
+            serverIP = titleScreen(serverIPFailed)
+            if serverIP == "QUIT":
+                titleScreenQuit = True
+            else:
+                # Get the "Network" class from "network.py" to communicate with the server
+                n = Network(serverIP)
+                titleScreenQuit = True
+                run = True
+        except RuntimeError:
+            serverIPFailed = True
+
+    if run:
+        # Get this specific client's player data, i.e. the data sent to the client when it first connected
+        p = n.getP()
+        FPSCheck = time.time()
+        FrameRate = FrameRateLock
 
     # Start the while loop
     while run:
         # The method "clock.tick()" computes how many milliseconds have passed since the previous call
         # By calling the method "clock.tick(60)" with the added argument, the method will delay to keep the game running SLOWER than 60 FPS
-        clock.tick(20)  # clock.tick(60)
+        clock.tick(FrameRateLock)  # clock.tick(60)
 
         latencyCheck = time.time()
 
@@ -140,18 +236,23 @@ def main():
             # Set the while-loop conditional variable to False
             run = False
             # Call the pygame "quit" method to close the window
-            pygame.quit()
+            # pygame.quit()
 
-        # Get all pygame events
-        for event in pygame.event.get():
-            # If the "pygame.QUIT" event is found
-            if event.type == pygame.QUIT:
-                # Set the while-loop conditional variable to False
-                run = False
-                # Call the pygame "quit" method to close the window
-                pygame.quit()
-                # Break out of the current for-loop
-                break
+        # noinspection PyBroadException
+        try:
+            # Get all pygame events
+            for event in pygame.event.get():
+                # If the "pygame.QUIT" event is found
+                if event.type == pygame.QUIT:
+                    # Set the while-loop conditional variable to False
+                    run = False
+                    # Call the pygame "quit" method to close the window
+                    # pygame.quit()
+                    # Break out of the current for-loop
+                    break
+        except Exception as e:
+            # print(e)
+            run = False
 
         # If the current kick value is different from that of the previous frame
         if p.kick != p.kickCheck:
