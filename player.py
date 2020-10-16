@@ -69,7 +69,7 @@ class Player:
     # Function does all of the fun math on how the physically move the character, as well as pixel-perfect collision detection for the platform
     def move(self, playerKicked, FrameRate):
 
-        accMult = 60/FrameRate
+        # accMult = 60/FrameRate
 
         # If the character has been kicked to the LEFT, set it's X-Axis velocity to MAX in the LEFT direction.
         if playerKicked == 1:
@@ -134,7 +134,7 @@ class Player:
             self.velX = -self.velXMax
 
         # If the character is within the bounds of the platform on the X-Axis
-        if 256 <= (self.x + self.width + self.velX) and (self.x + self.velX) <= 1024:
+        if 256+1 <= (self.x + self.width + self.velX) and (self.x + self.velX) <= 1024:
             # If the character is above, contacting, or will contact the platform on the Y-Axis
             if (self.y + self.height) <= 519 < (self.y + self.height + self.velY):
                 # Set the Y-Axis velocity to zero

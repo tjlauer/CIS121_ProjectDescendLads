@@ -36,7 +36,7 @@ class Network:
             # Attempt to establish a connection to the server.
             self.client.connect(self.addr)
             # If connection attempt is successful, receive the initial player data from the server
-            return pickle.loads(self.client.recv(2048))
+            return pickle.loads(self.client.recv(4096))  # 2048
         except:
             # If the connection attempt fails, do nothing
             # pass  # NOTE: The "pass" statement does literally nothing. It is a placeholder when a statement is required for syntax, but no code needs to be executed
@@ -50,7 +50,7 @@ class Network:
             # Attempt to send the character data to the server
             self.client.send(pickle.dumps(data))
             # Receive the array from the server and return it
-            return pickle.loads(self.client.recv(2048))
+            return pickle.loads(self.client.recv(4096))  # 2048
         except socket.error as e:
             # If there is a socket error, grab the error and print it to the console
             print(e)

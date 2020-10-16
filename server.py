@@ -57,7 +57,7 @@ def threaded_client(conn, IDString):
         # noinspection PyBroadException
         try:
             # Wait for the character data to be sent from the client
-            data = pickle.loads(conn.recv(2048))
+            data = pickle.loads(conn.recv(4096))  # 2048
             # Store the new data in the players array
             players[IDString] = data
 

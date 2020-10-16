@@ -1,8 +1,9 @@
 import pygame
 from network import Network
 import time
+import pygameKeyboardInputs
 
-windowTitle = "Descend Guys: Australia [ALPHA 2.1.0]"
+windowTitle = "Descend Guys: Australia [ALPHA 2.1.1]"
 
 # Define window width and height (in pixels)
 width = 1280
@@ -78,33 +79,6 @@ def redrawTitleWindow(serverIP, serverIPFailed):
     pygame.display.update()
 
 
-def IPAddressKey(key):
-    if key == pygame.K_0 or key == pygame.K_KP0:
-        return "0"
-    if key == pygame.K_1 or key == pygame.K_KP1:
-        return "1"
-    if key == pygame.K_2 or key == pygame.K_KP2:
-        return "2"
-    if key == pygame.K_3 or key == pygame.K_KP3:
-        return "3"
-    if key == pygame.K_4 or key == pygame.K_KP4:
-        return "4"
-    if key == pygame.K_5 or key == pygame.K_KP5:
-        return "5"
-    if key == pygame.K_6 or key == pygame.K_KP6:
-        return "6"
-    if key == pygame.K_7 or key == pygame.K_KP7:
-        return "7"
-    if key == pygame.K_8 or key == pygame.K_KP8:
-        return "8"
-    if key == pygame.K_9 or key == pygame.K_KP9:
-        return "9"
-    if key == pygame.K_PERIOD or key == pygame.K_KP_PERIOD:
-        return "."
-
-    return ""
-
-
 def titleScreen(serverIPFailed):
     # Initiate the pygame clock, which is used to lock the window frame rate
     clock = pygame.time.Clock()
@@ -138,7 +112,7 @@ def titleScreen(serverIPFailed):
             #     # Break out of the current for-loop
             #     break
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_l:
+                if event.key == pygame.K_COMMA:
                     serverIP = "localhost"
                 elif event.key == pygame.K_BACKSPACE:
                     if serverIP == "localhost":
@@ -146,7 +120,7 @@ def titleScreen(serverIPFailed):
                     else:
                         serverIP = serverIP[0:(len(serverIP) - 1)]
                 else:
-                    serverIP += IPAddressKey(event.key)
+                    serverIP += pygameKeyboardInputs.IPAddressKey(event.key)
 
     return serverIP
 
