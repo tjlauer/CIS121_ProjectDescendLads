@@ -64,7 +64,14 @@ class Player:
             pygame.draw.rect(win, (0, 0, 0), (self.x + self.width, self.y, self.width, self.height))
 
         # Add black text of the character's (indx+1) using "myfont" on top of the character
-        win.blit(myfont["Times New Roman 12"].render(str(self.usertag), False, (0, 0, 0)), (self.x, self.y - 12))
+        userTagText = myfont["Times New Roman 12"].render(str(self.usertag), False, (0, 0, 0))
+        # win.blit(userTagText, (self.x, self.y - 12))
+        userTagText_width = userTagText.get_width()
+        userTagText_centerSpacing = (self.width - userTagText_width) / 2
+        win.blit(userTagText, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y - userTagText.get_height() + 2))
+
+        # userTagText_rotated = pygame.transform.rotate(userTagText, 180)
+        # win.blit(userTagText_rotated, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y + self.height - 2))
 
     # Function does all of the fun math on how the physically move the character, as well as pixel-perfect collision detection for the platform
     def move(self, playerKicked, FrameRate):

@@ -1,9 +1,9 @@
 import pygame
 from network import Network
 import time
-import pygameKeyboardInputs
+import descendLadsGeneral
 
-windowTitle = "Descend Guys: Australia [ALPHA v2.2.1]"
+windowTitle = "Descend Lads: Australia [ALPHA v2.2.1]"
 
 # Define window width and height (in pixels)
 width = 1280
@@ -120,7 +120,7 @@ def titleScreen(serverIPFailed):
                     else:
                         serverIP = serverIP[0:(len(serverIP) - 1)]
                 else:
-                    serverIP += pygameKeyboardInputs.IPAddressKey(event.key)
+                    serverIP += descendLadsGeneral.IPAddressKey(event.key)
 
     return serverIP
 

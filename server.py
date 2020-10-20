@@ -6,7 +6,7 @@ import random
 import sys
 
 print("\n\n\n\n\n")
-print("Descend Guys: Australia [ALPHA v2.2.1]")
+print("Descend Lads: Australia [ALPHA v2.2.1]")
 print("-------------------------------------")
 print("Starting server...")
 
