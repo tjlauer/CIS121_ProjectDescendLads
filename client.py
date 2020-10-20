@@ -3,7 +3,7 @@ from network import Network
 import time
 import pygameKeyboardInputs
 
-windowTitle = "Descend Guys: Australia [ALPHA 2.1.1]"
+windowTitle = "Descend Guys: Australia [ALPHA v2.2.1]"
 
 # Define window width and height (in pixels)
 width = 1280

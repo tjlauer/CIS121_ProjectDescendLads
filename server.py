@@ -6,7 +6,7 @@ import random
 import sys
 
 print("\n\n\n\n\n")
-print("Descend Guys: Australia [ALPHA 2.1.0]")
+print("Descend Guys: Australia [ALPHA v2.2.1]")
 print("-------------------------------------")
 print("Starting server...")
 
@@ -57,7 +57,7 @@ def threaded_client(conn, IDString):
         # noinspection PyBroadException
         try:
             # Wait for the character data to be sent from the client
-            data = pickle.loads(conn.recv(4096))  # 2048
+            data = pickle.loads(conn.recv(8192))  # 2048 # 8192
             # Store the new data in the players array
             players[IDString] = data
 
