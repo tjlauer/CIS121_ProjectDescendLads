@@ -6,7 +6,7 @@ import random
 import sys
 
 print("\n\n\n\n\n")
-print("Descend Lads: Australia [ALPHA v2.2.1]")
+print("Descend Lads: Australia [ALPHA v3.0.0]")
 print("-------------------------------------")
 print("Starting server...")
 
@@ -111,14 +111,14 @@ while True:
 
     newPlayer["indx"] = currentPlayer
     newPlayer["spawnX"] = random.randint(256, 1024)
-    newPlayer["spawnY"] = -50
+    newPlayer["spawnY"] = 720 + 50
     newPlayer["width"] = 50
     newPlayer["height"] = 50
     newPlayer["color"] = (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255))
     newPlayer["kick"] = 0
     newPlayer["kickCheck"] = 0
 
-    newPlayer["gravity"] = 0.25 * 3
+    newPlayer["gravity"] = -0.25 * 3
     newPlayer["velXMax"] = 12 * 2
     newPlayer["velYMax"] = 10 * 2
     newPlayer["velThresh"] = 0.8  # 0.05
@@ -126,6 +126,8 @@ while True:
     newPlayer["accDrag"] = 0.1 * 8
     newPlayer["velY"] = 0
     newPlayer["velX"] = 0
+
+    newPlayer["kickDuration"] = 0.2
 
     # Append the newly created Player class to the players array.
     # players.append(Player(newPlayer))

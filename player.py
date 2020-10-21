@@ -42,9 +42,10 @@ class Player:
         self.velY = newPlayer["velY"]
         # This stores the current X-Axis velocity of the character.
         self.velX = newPlayer["velX"]
+        self.kickDuration = newPlayer["kickDuration"]
 
     # Function used to draw the character itself, as well as a box showing the kick zone if the character is currently kicking
-    def draw(self, win, myfont):
+    def draw(self, win, myfont, platform):
         # Draw the character onto the window "win" with the color "self.color" as specified in "self.rect"
         pygame.draw.rect(win, self.color, self.rect)
 
@@ -56,52 +57,54 @@ class Player:
         # If the character is currently kicking UP
         if self.kick == 2:  # print("Kick Up")
             # Draw the kick zone ABOVE the character
-            pygame.draw.rect(win, (0, 0, 0), (self.x, self.y - self.height, self.width, self.height))
+            # pygame.draw.rect(win, (0, 0, 0), (self.x, self.y - self.height, self.width, self.height))
+            pygame.draw.rect(win, (0, 0, 0), (self.x, self.y + self.height, self.width, self.height))
 
         # If the character is currently kicking to the RIGHT
         if self.kick == 3:  # print("Kick Right")
             # Draw the kick zone to the RIGHT of the character
             pygame.draw.rect(win, (0, 0, 0), (self.x + self.width, self.y, self.width, self.height))
 
-        # Add black text of the character's (indx+1) using "myfont" on top of the character
-        userTagText = myfont["Times New Roman 12"].render(str(self.usertag), False, (0, 0, 0))
+        if self.kick == 2:
+            # Add white text of the character's (indx+1) using "myfont" on top of the character
+            userTagText = myfont["Times New Roman 12"].render(str(self.usertag), False, (255, 255, 255))
+        else:
+            # Add black text of the character's (indx+1) using "myfont" on top of the character
+            userTagText = myfont["Times New Roman 12"].render(str(self.usertag), False, (0, 0, 0))
         # win.blit(userTagText, (self.x, self.y - 12))
         userTagText_width = userTagText.get_width()
         userTagText_centerSpacing = (self.width - userTagText_width) / 2
-        win.blit(userTagText, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y - userTagText.get_height() + 2))
+        # win.blit(userTagText, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y - userTagText.get_height() + 2))
 
-        # userTagText_rotated = pygame.transform.rotate(userTagText, 180)
-        # win.blit(userTagText_rotated, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y + self.height - 2))
+        # win.blit(userTagText, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y + self.height))
+
+        userTagText_rotated = pygame.transform.rotate(userTagText, 180)
+        win.blit(userTagText_rotated, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y + self.height - 2))
 
     # Function does all of the fun math on how the physically move the character, as well as pixel-perfect collision detection for the platform
-    def move(self, playerKicked, FrameRate):
+    def move(self, playerKicked, keys, FrameRate, platform):
 
         # accMult = 60/FrameRate
 
-        # If the character has been kicked to the LEFT, set it's X-Axis velocity to MAX in the LEFT direction.
-        if playerKicked == 1:
+        if playerKicked == 1:  # If the character has been kicked to the LEFT, set it's X-Axis velocity to MAX in the LEFT direction.
             self.velX = -self.velXMax
-            self.velY = -self.velYMax * (1/4)
-
-        # If the character has been kicked UP, set it's Y-Axis velocity to MAX in the UPWARDS direction.
-        if playerKicked == 2:
-            self.velY = -self.velYMax
-
-        # If the character has been kicked to the RIGHT, set it's X-Axis velocity to MAX in the RIGHT direction.
-        if playerKicked == 3:
+            self.velY = self.velYMax * (1/4)
+        elif playerKicked == 2:  # If the character has been kicked UP, set it's Y-Axis velocity to MAX in the UPWARDS direction.
+            self.velY = self.velYMax
+        elif playerKicked == 3:  # If the character has been kicked to the RIGHT, set it's X-Axis velocity to MAX in the RIGHT direction.
             self.velX = self.velXMax
-            self.velY = -self.velYMax * (1 / 4)
+            self.velY = self.velYMax * (1 / 4)
 
         # Get a dictionary of all keyboard keys that contains if the specified key is currently pressed (True) or not (False)
-        keys = pygame.key.get_pressed()
+        # keys = pygame.key.get_pressed()
 
         # If the "A" key is being pressed, accelerate to the left by subtracting from the X-Axis velocity
         if keys[pygame.K_a]:  # K_LEFT
-            self.velX -= self.acc  # * accMult
+            self.velX += self.acc  # * accMult
 
         # If the "D" key is being pressed, accelerate to the right by adding to the X-Axis velocity
         if keys[pygame.K_d]:  # K_RIGHT
-            self.velX += self.acc  # * accMult
+            self.velX -= self.acc  # * accMult
 
         # NOTE: By having the "A" and "D" keypress checks as separate if statements, they cancel each other out if both are being pressed.
         #       This results in zero net-change in X-Axis velocity.
@@ -123,9 +126,9 @@ class Player:
                 self.velX = 0
 
         # If the Y-Axis velocity is zero (i.e. character is on the platform) and the space bar is pressed
-        if keys[pygame.K_SPACE] and self.velY == 0 and (self.y == 519 - self.height):
+        if keys[pygame.K_SPACE] and self.velY == 0 and (self.y == platform["top"] + platform["height"]):
             # Make the character jump by setting the Y-Axis velocity
-            self.velY -= (1.25 * self.velYMax)
+            self.velY += (1.25 * self.velYMax)
 
         # Add gravity to the Y-Axis velocity
         self.velY += self.gravity  # * accMult
@@ -141,13 +144,13 @@ class Player:
             self.velX = -self.velXMax
 
         # If the character is within the bounds of the platform on the X-Axis
-        if 256+1 <= (self.x + self.width + self.velX) and (self.x + self.velX) <= 1024:
+        if platform["left"]+1 <= (self.x + self.width + self.velX) and (self.x + self.velX) <= platform["left"]+platform["width"]:
             # If the character is above, contacting, or will contact the platform on the Y-Axis
-            if (self.y + self.height) <= 519 < (self.y + self.height + self.velY):
+            if self.y >= platform["top"] + platform["height"] > (self.y + self.velY):
                 # Set the Y-Axis velocity to zero
                 self.velY = 0
                 # Set the character's Y-Axis position to perfectly stand on top of the platform
-                self.y = 519 - self.height
+                self.y = platform["top"] + platform["height"]
 
         # Add the X-Axis velocity to the character's X-Axis position
         self.x += self.velX
@@ -157,29 +160,32 @@ class Player:
 
         # If the character's Y-Axis position falls below the bounds of the window (i.e. the character falls/is kicked off of the platform)
         # reset the X-Axis and Y-Axis velocities and respawn the character
-        if self.y > 720:
-            self.y = -50
-            self.x = random.randint(256, 1024)
+        if self.y < 0 - self.height:
+            self.y = 720 + 50
+            self.x = random.randint(platform["left"], platform["left"]+platform["width"])
             self.velX = 0
             self.velY = 0
+
+        self.x = round(self.x, 5)
+        self.y = round(self.y, 5)
 
         # Call the player class function "update" to set the new position of the shape of the character itself
         self.update()
 
     # Function checks whether or not the character performs a kick
-    def kickAction(self):
+    def kickAction(self, keys):
         # Get a dictionary of all keyboard keys that contains if the specified key is currently pressed (True) or not (False)
-        keys = pygame.key.get_pressed()
+        # keys = pygame.key.get_pressed()
 
         # If the left arrow key is being pressed AND the up arrow key is not being pressed AND the right arrow key is not being pressed
         if keys[pygame.K_LEFT] and not(keys[pygame.K_UP]) and not(keys[pygame.K_RIGHT]):
             # Update the "kick" variable to signify a kick to the left
-            self.kick = 1
+            self.kick = 3
 
         # If the left arrow key is not being pressed AND the up arrow key is not being pressed AND the right arrow key is being pressed
         elif not(keys[pygame.K_LEFT]) and not(keys[pygame.K_UP]) and keys[pygame.K_RIGHT]:
             # Update the "kick" variable to signify a kick to the right
-            self.kick = 3
+            self.kick = 1
 
         # If the left arrow key is not being pressed AND the up arrow key is being pressed AND the right arrow key is not being pressed
         elif not(keys[pygame.K_LEFT]) and keys[pygame.K_UP] and not(keys[pygame.K_RIGHT]):

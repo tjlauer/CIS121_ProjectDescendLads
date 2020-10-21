@@ -3,12 +3,26 @@ from network import Network
 import time
 import descendLadsGeneral
 
-windowTitle = "Descend Lads: Australia [ALPHA v2.2.1]"
+windowTitle = "Descend Lads: Australia [ALPHA v3.0.0]"
 
 # Define window width and height (in pixels)
 width = 1280
 height = 720
 FrameRateLock = 20
+
+# platform = {
+#     "left": 256,
+#     "top": 519,
+#     "width": 768,
+#     "height": 50
+# }
+
+platform = {
+    "left": 256,
+    "top": 150,
+    "width": 768,
+    "height": 50
+}
 
 # Initialize the font functionality of pygame
 pygame.font.init()
@@ -30,39 +44,54 @@ pygame.display.set_caption(windowTitle)
 
 # This function receives the array "p2" (containing the character data for all players) send from the server.
 # It loops through all array elements and draws each player character onto the pygame window.
-def redrawWindow(p2, playerUsertag, playerColor, latencyCheck, FPSCheck):
+def redrawWindow(p2, playerUsertag, playerColor, latencyCheck, FPSCheck, kickTimer, kickValue, frameTimeStamp, clientDebugging):
     # Set the window background to white
     win.fill((255, 255, 255))
 
     # Draw the black platform onto the window
-    pygame.draw.rect(win, (0, 0, 0), (256, 519, 768, 50))
-
-    FPSCheckNew = time.time()
-    FPSCheckOld = FPSCheckNew - FPSCheck
+    # Rect(left, top, width, height) -> Rect
+    pygame.draw.rect(win, (0, 0, 0), (platform["left"], platform["top"], platform["width"], platform["height"]))
 
     # Loop through all elements in the "p2" array as "player"
     for player_key in p2:
         player = p2[player_key]
         # Call the player class function "draw" for the current character
-        player.draw(win, myfont)
+        player.draw(win, myfont, platform)
 
-    latency = (time.time() - latencyCheck)
+    FPSCheckNew = time.time()
+    FPSCheckOld = FPSCheckNew - FPSCheck
+
+    latency = (FPSCheckNew - latencyCheck)
 
     win.blit(myfont["Times New Roman 20"].render("USERTAG: " + str(playerUsertag), False, (0, 0, 0)), (0, 0))
     pygame.draw.rect(win, playerColor, (75, 23, 130, 20))
     win.blit(myfont["Times New Roman 20"].render("COLOR: " + str(playerColor), False, (0, 0, 0)), (0, 20))
-    win.blit(myfont["Times New Roman 12"].render("Latency: " + str(latency * 1000), False, (0, 0, 0)), (0, 45))
-    if latency == 0:
-        win.blit(myfont["Times New Roman 12"].render("Theoretical FPS: INF", False, (0, 0, 0)), (0, 60))
-    else:
-        win.blit(myfont["Times New Roman 12"].render("Theoretical FPS: " + str(1 / latency), False, (0, 0, 0)), (0, 60))
+
+    if clientDebugging >= 1:
+        win.blit(myfont["Times New Roman 12"].render("Latency: " + str(round(latency * 1000, 2)), False, (0, 0, 0)), (0, 45))
+        if latency == 0:
+            win.blit(myfont["Times New Roman 12"].render("Theoretical FPS: INF", False, (0, 0, 0)), (0, 60))
+        else:
+            win.blit(myfont["Times New Roman 12"].render("Theoretical FPS: " + str(round(1 / latency, 2)), False, (0, 0, 0)), (0, 60))
 
     if FPSCheckOld == 0:
-        win.blit(myfont["Times New Roman 12"].render("FPS: INF", False, (0, 0, 0)), (0, 75))
+        if clientDebugging >= 1:
+            win.blit(myfont["Times New Roman 12"].render("FPS: INF", False, (0, 0, 0)), (0, 75))
         FrameRate = FrameRateLock
     else:
-        win.blit(myfont["Times New Roman 12"].render("FPS: " + str(1 / FPSCheckOld), False, (0, 0, 0)), (0, 75))
+        if clientDebugging >= 1:
+            win.blit(myfont["Times New Roman 12"].render("FPS: " + str(round(1 / FPSCheckOld, 2)), False, (0, 0, 0)), (0, 75))
         FrameRate = 1 / FPSCheckOld
+
+    if clientDebugging >= 2:
+        for player_key in p2:
+            if p2[player_key].usertag == playerUsertag:
+                win.blit(myfont["Times New Roman 12"].render("X: " + str(p2[player_key].x), False, (0, 0, 0)), (0, 90))
+                win.blit(myfont["Times New Roman 12"].render("Y: " + str(p2[player_key].y), False, (0, 0, 0)), (0, 105))
+                break
+
+        win.blit(myfont["Times New Roman 12"].render("kickTimer: " + str(frameTimeStamp - kickTimer), False, (0, 0, 0)), (0, 120))
+        win.blit(myfont["Times New Roman 12"].render("kickValue: " + str(kickValue), False, (0, 0, 0)), (0, 135))
 
     # Once everything has been redrawn onto the window, show it to the user
     pygame.display.update()
@@ -157,13 +186,22 @@ def main():
         FPSCheck = time.time()
         FrameRate = FrameRateLock
 
+    kickTimer = time.time()
+
+    clientDebugging = 0
+
+    print("Starting main loop")
+
     # Start the while loop
     while run:
+
         # The method "clock.tick()" computes how many milliseconds have passed since the previous call
         # By calling the method "clock.tick(60)" with the added argument, the method will delay to keep the game running SLOWER than 60 FPS
         clock.tick(FrameRateLock)  # clock.tick(60)
 
-        latencyCheck = time.time()
+        frameTimeStamp = time.time()
+
+        latencyCheck = frameTimeStamp
 
         # Send this client's character data to the server. It will reply with an array of data for ALL characters, which we store as "p2"
         p2 = n.send(p)
@@ -183,7 +221,7 @@ def main():
             # If the current character has kicked UP
             if player.kick == 2:
                 # Check to see if this client's character is inside of the kick zone
-                if ((p.x <= player.x + player.width) and (p.x + p.width) >= player.x) and ((player.y - player.height) <= (p.y + p.height) < player.y):
+                if ((p.x <= player.x + player.width) and (p.x + p.width) >= player.x) and ((player.y + player.height) <= p.y < player.y + (player.height * 2)):
                     # This client's character is, indeed, inside of the kick zone. Update the temporary variable, which will be used when updating this client's character's position
                     playerKicked = 2
             # If the current character has kicked to the RIGHT
@@ -193,17 +231,29 @@ def main():
                     # This client's character is, indeed, inside of the kick zone. Update the temporary variable, which will be used when updating this client's character's position
                     playerKicked = 3
 
-        # Move the character by calling the player class function "move" for the current character and passing it the temporary "playerKicked" variable
-        p.move(playerKicked, FrameRate)
-
-        # Check whether or not to perform a kick with this client's character by calling the player class function "kickAction"
-        p.kickAction()
-
-        # Call the "redrawWindow" function and pass it the information sent by the server, which is stored in the "p2" variable
-        (FPSCheck, FrameRate) = redrawWindow(p2, p.usertag, p.color, latencyCheck, FPSCheck)
-
         # Get a dictionary of all keyboard keys that contains if the specified key is currently pressed (True) or not (False)
         keys = pygame.key.get_pressed()
+
+        # Move the character by calling the player class function "move" for the current character and passing it the temporary "playerKicked" variable
+        p.move(playerKicked, keys, FrameRate, platform)
+
+        # Check whether or not to perform a kick with this client's character by calling the player class function "kickAction"
+        p.kickAction(keys)
+
+        if p.kick == 0:
+            kickTimer = frameTimeStamp
+        elif frameTimeStamp - kickTimer >= p.kickDuration:
+            p.kick = 0
+
+        # Call the "redrawWindow" function and pass it the information sent by the server, which is stored in the "p2" variable
+        (FPSCheck, FrameRate) = redrawWindow(p2, p.usertag, p.color, latencyCheck, FPSCheck, kickTimer, p.kick, frameTimeStamp, clientDebugging)
+
+        if keys[pygame.K_F9]:
+            clientDebugging = 0
+        elif keys[pygame.K_F10]:
+            clientDebugging = 1
+        elif keys[pygame.K_F11]:
+            clientDebugging = 2
 
         # If the keyboard "ESCAPE" key is pressed
         if keys[pygame.K_ESCAPE]:
