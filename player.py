@@ -44,6 +44,10 @@ class Player:
         self.velX = newPlayer["velX"]
         self.kickDuration = newPlayer["kickDuration"]
 
+        self.SFX_CharacterIndx = newPlayer["SFX_CharacterIndx"]
+
+        self.isKicked = 0
+
     # Function used to draw the character itself, as well as a box showing the kick zone if the character is currently kicking
     def draw(self, win, myfont, platform):
         # Draw the character onto the window "win" with the color "self.color" as specified in "self.rect"
@@ -82,7 +86,7 @@ class Player:
         win.blit(userTagText_rotated, (self.x + self.width - userTagText_width - userTagText_centerSpacing, self.y + self.height - 2))
 
     # Function does all of the fun math on how the physically move the character, as well as pixel-perfect collision detection for the platform
-    def move(self, playerKicked, keys, FrameRate, platform):
+    def move(self, playerKicked, keys, FrameRate, platform, playerSounds):
 
         # accMult = 60/FrameRate
 
@@ -161,6 +165,17 @@ class Player:
         # If the character's Y-Axis position falls below the bounds of the window (i.e. the character falls/is kicked off of the platform)
         # reset the X-Axis and Y-Axis velocities and respawn the character
         if self.y < 0 - self.height:
+            # respawnSoundIndx = random.randint(1, 5)
+            # if respawnSoundIndx == 1:
+            #     pygame.mixer.Sound.play(playerSounds["Respawn_1"])
+            # elif respawnSoundIndx == 2:
+            #     pygame.mixer.Sound.play(playerSounds["Respawn_2"])
+            # elif respawnSoundIndx == 3:
+            #     pygame.mixer.Sound.play(playerSounds["Respawn_3"])
+            # elif respawnSoundIndx == 4:
+            #     pygame.mixer.Sound.play(playerSounds["Respawn_4"])
+            # elif respawnSoundIndx == 5:
+            #     pygame.mixer.Sound.play(playerSounds["Respawn_5"])
             self.y = 720 + 50
             self.x = random.randint(platform["left"], platform["left"]+platform["width"])
             self.velX = 0

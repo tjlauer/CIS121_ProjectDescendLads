@@ -1,9 +1,10 @@
 import pygame
 from network import Network
 import time
+import random
 import descendLadsGeneral
 
-windowTitle = "Descend Lads: Australia [ALPHA v3.0.0]"
+windowTitle = "Descend Lads: Australia [RELEASE v5.0.0]"
 
 # Define window width and height (in pixels)
 width = 1280
@@ -24,6 +25,8 @@ platform = {
     "height": 50
 }
 
+pygame.init()
+
 # Initialize the font functionality of pygame
 pygame.font.init()
 # Create a font for text using Times New Roman size 30
@@ -41,6 +44,48 @@ win = pygame.display.set_mode((width, height))
 # Set the window title permanently to "Player #" to replace the placeholder, where # is this client's indx number plus 1
 pygame.display.set_caption(windowTitle)
 
+pygame.mixer.music.load('sounds/BackgroundMusic.wav')
+
+playerSounds_Chad = {}
+playerSounds_Chad["Damage_1"] = pygame.mixer.Sound("sounds/Chad/Damage_1.wav")
+playerSounds_Chad["Damage_2"] = pygame.mixer.Sound("sounds/Chad/Damage_2.wav")
+playerSounds_Chad["Damage_3"] = pygame.mixer.Sound("sounds/Chad/Damage_3.wav")
+playerSounds_Chad["Respawn_1"] = pygame.mixer.Sound("sounds/Chad/Respawn_1.wav")
+playerSounds_Chad["Respawn_2"] = pygame.mixer.Sound("sounds/Chad/Respawn_2.wav")
+playerSounds_Chad["Respawn_3"] = pygame.mixer.Sound("sounds/Chad/Respawn_3.wav")
+playerSounds_Chad["Respawn_4"] = pygame.mixer.Sound("sounds/Chad/Respawn_4.wav")
+playerSounds_Chad["Respawn_5"] = pygame.mixer.Sound("sounds/Chad/Respawn_5.wav")
+
+playerSounds_Shmarvis = {}
+playerSounds_Shmarvis["Damage_1"] = pygame.mixer.Sound("sounds/Shmarvis/Damage_1.wav")
+playerSounds_Shmarvis["Damage_2"] = pygame.mixer.Sound("sounds/Shmarvis/Damage_2.wav")
+playerSounds_Shmarvis["Damage_3"] = pygame.mixer.Sound("sounds/Shmarvis/Damage_3.wav")
+playerSounds_Shmarvis["Respawn_1"] = pygame.mixer.Sound("sounds/Shmarvis/Respawn_1.wav")
+playerSounds_Shmarvis["Respawn_2"] = pygame.mixer.Sound("sounds/Shmarvis/Respawn_2.wav")
+playerSounds_Shmarvis["Respawn_3"] = pygame.mixer.Sound("sounds/Shmarvis/Respawn_3.wav")
+playerSounds_Shmarvis["Respawn_4"] = pygame.mixer.Sound("sounds/Shmarvis/Respawn_4.wav")
+playerSounds_Shmarvis["Respawn_5"] = pygame.mixer.Sound("sounds/Shmarvis/Respawn_5.wav")
+
+playerSounds_Yellvis = {}
+playerSounds_Yellvis["Damage_1"] = pygame.mixer.Sound("sounds/Yellvis/Damage_1.wav")
+playerSounds_Yellvis["Damage_2"] = pygame.mixer.Sound("sounds/Yellvis/Damage_2.wav")
+playerSounds_Yellvis["Damage_3"] = pygame.mixer.Sound("sounds/Yellvis/Damage_3.wav")
+playerSounds_Yellvis["Respawn_1"] = pygame.mixer.Sound("sounds/Yellvis/Respawn_1.wav")
+playerSounds_Yellvis["Respawn_2"] = pygame.mixer.Sound("sounds/Yellvis/Respawn_2.wav")
+playerSounds_Yellvis["Respawn_3"] = pygame.mixer.Sound("sounds/Yellvis/Respawn_3.wav")
+playerSounds_Yellvis["Respawn_4"] = pygame.mixer.Sound("sounds/Yellvis/Respawn_4.wav")
+playerSounds_Yellvis["Respawn_5"] = pygame.mixer.Sound("sounds/Yellvis/Respawn_5.wav")
+
+playerSounds_Loli = {}
+playerSounds_Loli["Damage_1"] = pygame.mixer.Sound("sounds/Loli/Damage_1.wav")
+playerSounds_Loli["Damage_2"] = pygame.mixer.Sound("sounds/Loli/Damage_2.wav")
+playerSounds_Loli["Damage_3"] = pygame.mixer.Sound("sounds/Loli/Damage_3.wav")
+playerSounds_Loli["Respawn_1"] = pygame.mixer.Sound("sounds/Loli/Respawn_1.wav")
+playerSounds_Loli["Respawn_2"] = pygame.mixer.Sound("sounds/Loli/Respawn_2.wav")
+playerSounds_Loli["Respawn_3"] = pygame.mixer.Sound("sounds/Loli/Respawn_3.wav")
+playerSounds_Loli["Respawn_4"] = pygame.mixer.Sound("sounds/Loli/Respawn_4.wav")
+playerSounds_Loli["Respawn_5"] = pygame.mixer.Sound("sounds/Loli/Respawn_5.wav")
+
 
 # This function receives the array "p2" (containing the character data for all players) send from the server.
 # It loops through all array elements and draws each player character onto the pygame window.
@@ -55,6 +100,27 @@ def redrawWindow(p2, playerUsertag, playerColor, latencyCheck, FPSCheck, kickTim
     # Loop through all elements in the "p2" array as "player"
     for player_key in p2:
         player = p2[player_key]
+
+        if player.isKicked == 1:
+            if player.SFX_CharacterIndx == 0:
+                pygame.mixer.Sound.play(playerSounds_Chad["Damage_" + str(random.randint(1, 3))])
+            elif player.SFX_CharacterIndx == 1:
+                pygame.mixer.Sound.play(playerSounds_Shmarvis["Damage_" + str(random.randint(1, 3))])
+            elif player.SFX_CharacterIndx == 2:
+                pygame.mixer.Sound.play(playerSounds_Yellvis["Damage_" + str(random.randint(1, 3))])
+            elif player.SFX_CharacterIndx == 3:
+                pygame.mixer.Sound.play(playerSounds_Loli["Damage_" + str(random.randint(1, 3))])
+
+        if player.y >= 770:
+            if player.SFX_CharacterIndx == 0:
+                pygame.mixer.Sound.play(playerSounds_Chad["Respawn_" + str(random.randint(1, 5))])
+            elif player.SFX_CharacterIndx == 1:
+                pygame.mixer.Sound.play(playerSounds_Shmarvis["Respawn_" + str(random.randint(1, 5))])
+            elif player.SFX_CharacterIndx == 2:
+                pygame.mixer.Sound.play(playerSounds_Yellvis["Respawn_" + str(random.randint(1, 5))])
+            elif player.SFX_CharacterIndx == 3:
+                pygame.mixer.Sound.play(playerSounds_Loli["Respawn_" + str(random.randint(1, 5))])
+
         # Call the player class function "draw" for the current character
         player.draw(win, myfont, platform)
 
@@ -183,12 +249,26 @@ def main():
     if run:
         # Get this specific client's player data, i.e. the data sent to the client when it first connected
         p = n.getP()
+        print("SFX_CharacterIndx = "+str(p.SFX_CharacterIndx))
         FPSCheck = time.time()
         FrameRate = FrameRateLock
+
+    playerSounds = {}
+
+    if p.SFX_CharacterIndx == 0:
+        playerSounds = playerSounds_Chad
+    elif p.SFX_CharacterIndx == 1:
+        playerSounds = playerSounds_Shmarvis
+    elif p.SFX_CharacterIndx == 2:
+        playerSounds = playerSounds_Yellvis
+    elif p.SFX_CharacterIndx == 3:
+        playerSounds = playerSounds_Loli
 
     kickTimer = time.time()
 
     clientDebugging = 0
+
+    pygame.mixer.music.play(-1)
 
     print("Starting main loop")
 
@@ -231,11 +311,23 @@ def main():
                     # This client's character is, indeed, inside of the kick zone. Update the temporary variable, which will be used when updating this client's character's position
                     playerKicked = 3
 
+        if playerKicked != 0:
+            p.isKicked = 1
+            damageSoundIndx = random.randint(1, 3)
+            if damageSoundIndx == 1:
+                pygame.mixer.Sound.play(playerSounds["Damage_1"])
+            elif damageSoundIndx == 2:
+                pygame.mixer.Sound.play(playerSounds["Damage_2"])
+            elif damageSoundIndx == 3:
+                pygame.mixer.Sound.play(playerSounds["Damage_3"])
+        else:
+            p.isKicked = 0
+
         # Get a dictionary of all keyboard keys that contains if the specified key is currently pressed (True) or not (False)
         keys = pygame.key.get_pressed()
 
         # Move the character by calling the player class function "move" for the current character and passing it the temporary "playerKicked" variable
-        p.move(playerKicked, keys, FrameRate, platform)
+        p.move(playerKicked, keys, FrameRate, platform, playerSounds)
 
         # Check whether or not to perform a kick with this client's character by calling the player class function "kickAction"
         p.kickAction(keys)

@@ -6,7 +6,7 @@ import random
 import sys
 
 print("\n\n\n\n\n")
-print("Descend Lads: Australia [ALPHA v3.0.0]")
+print("Descend Lads: Australia [RELEASE v5.0.0]")
 print("-------------------------------------")
 print("Starting server...")
 
@@ -108,6 +108,8 @@ while True:
     newPlayer = {}
 
     newPlayer["usertag"] = IDString
+
+    newPlayer["SFX_CharacterIndx"] = random.randint(0, 3)
 
     newPlayer["indx"] = currentPlayer
     newPlayer["spawnX"] = random.randint(256, 1024)
