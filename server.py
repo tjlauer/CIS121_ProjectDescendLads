@@ -11,7 +11,8 @@ print("-------------------------------------")
 print("Starting server...")
 
 # The IPv4 address of the server
-server = ""  # "192.168.1.25"  # "138.236.188.50"
+server = input("Enter server IPv4 Address: ")
+# server = ""  # "192.168.1.25"  # "138.236.188.50"
 # The network port through which to communicate
 port = 5555
 
