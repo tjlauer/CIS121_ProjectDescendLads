@@ -1,4 +1,5 @@
 # MNSU CIS 121 - Introduction to Programming<br>Semester Project: Descend Lads
+CIS 121 Semester Project (Fall 2020)
 
 ## Trailer Video
 https://youtu.be/zkPRb394z3M
